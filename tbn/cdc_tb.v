@@ -6,7 +6,7 @@
 
 module cdc_tb ();
 
-parameter     CW = 1;   // counter width
+parameter     FF = 4;   // counter width
 parameter     DW = 8;   // data    width
 
 // input port
@@ -123,8 +123,14 @@ initial begin
   $dumpvars(0, cdc_tb);
 end
 
+// test correct end
 always @ (posedge ffo_clk)
 if (ffo_cnt == 64)  $finish();
+
+// test timeout
+initial begin
+  #10000 $finish();
+end
 
 ////////////////////////////////////////////////////////////////////////////////
 // DUT instance
@@ -132,7 +138,7 @@ if (ffo_cnt == 64)  $finish();
 
 // data output
 sockit_cdc #(
-  .CW       (CW),
+  .FF       (FF),
   .DW       (DW)
 ) cdc (
   // input port

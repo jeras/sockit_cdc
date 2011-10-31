@@ -1,31 +1,36 @@
 [timestart] 0
 [size] 1362 724
 [pos] -1 -1
-*0.000000 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1
+*-16.971058 195000 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1
 [treeopen] cdc_tb.
+@28
+cdc_tb.cdc.ffi_clk
+cdc_tb.cdc.ffi_rst
 @22
 cdc_tb.cdc.ffi_bus[7:0]
 @28
-cdc_tb.cdc.ffi_clk
-cdc_tb.cdc.ffi_clr
-cdc_tb.cdc.ffi_cnt
-cdc_tb.cdc.ffi_grt
-cdc_tb.cdc.ffi_inc
 cdc_tb.cdc.ffi_req
-cdc_tb.cdc.ffi_rst
-cdc_tb.cdc.ffi_syn
+cdc_tb.cdc.ffi_grt
 cdc_tb.cdc.ffi_trn
-@22
+cdc_tb.cdc.ffi_cnb[1:0]
+cdc_tb.cdc.ffi_cng[1:0]
+cdc_tb.cdc.ffi_cns
+cdc_tb.cdc.ffi_inb[1:0]
+cdc_tb.cdc.ffi_ing[1:0]
+cdc_tb.cdc.ffi_cne
+cdc_tb.cdc.ffo_clk
+cdc_tb.cdc.ffo_rst
+@23
 cdc_tb.cdc.ffo_bus[7:0]
 @28
-cdc_tb.cdc.ffo_clk
-cdc_tb.cdc.ffo_clr
-cdc_tb.cdc.ffo_cnt
-cdc_tb.cdc.ffo_grt
-cdc_tb.cdc.ffo_inc
 cdc_tb.cdc.ffo_req
-cdc_tb.cdc.ffo_rst
-cdc_tb.cdc.ffo_syn
+cdc_tb.cdc.ffo_grt
 cdc_tb.cdc.ffo_trn
+cdc_tb.cdc.ffo_cnb[1:0]
+cdc_tb.cdc.ffo_cng[1:0]
+cdc_tb.cdc.ffo_cns
+cdc_tb.cdc.ffo_inb[1:0]
+cdc_tb.cdc.ffo_ing[1:0]
+cdc_tb.cdc.ffo_cne
 [pattern_trace] 1
 [pattern_trace] 0
