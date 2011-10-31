@@ -1,4 +1,5 @@
 ////////////////////////////////////////////////////////////////////////////////
+// 
 ////////////////////////////////////////////////////////////////////////////////
 
 `timescale 1us / 1ns
@@ -9,32 +10,30 @@ parameter     CW = 1;   // counter width
 parameter     DW = 8;   // data    width
 
 // input port
-reg           cdi_clk;  // clock
-reg           cdi_rst;  // reset
-wire          cdi_clr;  // clear
-wire [DW-1:0] cdi_dat;  // data
-reg           cdi_req;  // request
-wire          cdi_grt;  // grant
+reg           ffi_clk;  // clock
+reg           ffi_rst;  // reset
+wire [DW-1:0] ffi_bus;  // data
+reg           ffi_req;  // request
+wire          ffi_grt;  // grant
 
-wire          cdi_trn;  // transfer
-integer       cdi_cnt;  // counter
-real          cdi_per;  // period
-reg  [32-1:0] cdi_rnd;  // random
-reg  [32-1:0] cdi_prb;  // probability
+wire          ffi_trn;  // transfer
+integer       ffi_cnt;  // counter
+real          ffi_per;  // period
+reg  [32-1:0] ffi_rnd;  // random
+reg  [32-1:0] ffi_prb;  // probability
 
 // output port
-reg           cdo_clk;  // clock
-reg           cdo_rst;  // reset
-wire          cdo_clr;  // clear
-wire [DW-1:0] cdo_dat;  // data
-wire          cdo_req;  // request
-reg           cdo_grt;  // grant
+reg           ffo_clk;  // clock
+reg           ffo_rst;  // reset
+wire [DW-1:0] ffo_bus;  // data
+wire          ffo_req;  // request
+reg           ffo_grt;  // grant
 
-wire          cdo_trn;  // transfer
-integer       cdo_cnt;  // counter
-real          cdo_per;  // period
-reg  [32-1:0] cdo_rnd;  // random
-reg  [32-1:0] cdo_prb;  // probability
+wire          ffo_trn;  // transfer
+integer       ffo_cnt;  // counter
+real          ffo_per;  // period
+reg  [32-1:0] ffo_rnd;  // random
+reg  [32-1:0] ffo_prb;  // probability
 
 // monitoring
 integer error = 0;
@@ -43,77 +42,74 @@ integer error = 0;
 // clocks and resets
 ////////////////////////////////////////////////////////////////////////////////
 
-initial              cdi_clk = 1'b1;
-always #(cdi_per/2)  cdi_clk = ~cdi_clk;
+initial              ffi_clk = 1'b1;
+always #(ffi_per/2)  ffi_clk = ~ffi_clk;
 
-initial              cdo_clk = 1'b1;
-always #(cdo_per/2)  cdo_clk = ~cdo_clk;
+initial              ffo_clk = 1'b1;
+always #(ffo_per/2)  ffo_clk = ~ffo_clk;
 
 initial begin
-  cdi_rst = 1'b1;
-  repeat (4) @ (posedge cdi_clk);
-  cdi_rst = 1'b0;
+  ffi_rst = 1'b1;
+  repeat (4) @ (posedge ffi_clk);
+  ffi_rst = 1'b0;
 end
 
 initial begin
-  cdo_rst = 1'b1;
-  repeat (4) @ (posedge cdo_clk);
-  cdo_rst = 1'b0;
+  ffo_rst = 1'b1;
+  repeat (4) @ (posedge ffo_clk);
+  ffo_rst = 1'b0;
 end
 
 initial begin
-  cdi_per = 10.0;
-  cdo_per = 10.0;
+  ffi_per = 10.0;
+  ffo_per = 10.0;
 end
 
 ////////////////////////////////////////////////////////////////////////////////
 // control signals
 ////////////////////////////////////////////////////////////////////////////////
 
-assign cdi_clr = 1'b0;
-assign cdo_clr = 1'b0;
+assign ffi_trn = ffi_req & ffi_grt;
+assign ffo_trn = ffo_req & ffo_grt;
 
-assign cdi_trn = cdi_req & cdi_grt;
-assign cdo_trn = cdo_req & cdo_grt;
+always @ (posedge ffi_clk, posedge ffi_rst)
+if (ffi_rst)  ffi_req <= 1'b0;
+else          ffi_req <= ~ffi_req | ffi_trn ? $random(ffi_rnd) < ffi_prb : 1'b1;
 
-always @ (posedge cdi_clk, posedge cdi_rst)
-if (cdi_rst)  cdi_req <= 1'b0;
-else          cdi_req <= ~cdi_req | cdi_trn ? $random(cdi_rnd) < cdi_prb : 1'b1;
-
-always @ (posedge cdo_clk, posedge cdo_rst)
-if (cdo_rst)  cdo_grt <= 1'b0;
-else          cdo_grt <= ~cdo_grt | cdo_trn ? $random(cdo_rnd) < cdo_prb : 1'b1;
+always @ (posedge ffo_clk, posedge ffo_rst)
+if (ffo_rst)  ffo_grt <= 1'b0;
+else          ffo_grt <= ~ffo_grt | ffo_trn ? $random(ffo_rnd) < ffo_prb : 1'b1;
 
 initial begin
-  cdi_rnd = 0;
-  cdo_rnd = 1;
+  ffi_rnd = 0;
+  ffo_rnd = 1;
 end
 
 initial begin
-  cdi_prb = 32'h7fffffff;
-  cdo_prb = 32'h7fffffff;
+  ffi_prb = 32'h7fffffff;
+  ffo_prb = 32'h7fffffff;
 end
 
 ////////////////////////////////////////////////////////////////////////////////
 // counters 
 ////////////////////////////////////////////////////////////////////////////////
 
-always @ (posedge cdi_clk, posedge cdi_rst)
-if (cdi_rst)       cdi_cnt <= 0;
-else if (cdi_trn)  cdi_cnt <= cdi_cnt + 1;
+always @ (posedge ffi_clk, posedge ffi_rst)
+if (ffi_rst)       ffi_cnt <= 0;
+else if (ffi_trn)  ffi_cnt <= ffi_cnt + 1;
 
-always @ (posedge cdo_clk, posedge cdo_rst)
-if (cdo_rst)       cdo_cnt <= 1'b0;
-else if (cdo_trn)  cdo_cnt <= cdo_cnt + 1;
+always @ (posedge ffo_clk, posedge ffo_rst)
+if (ffo_rst)       ffo_cnt <= 1'b0;
+else if (ffo_trn)  ffo_cnt <= ffo_cnt + 1;
 
 ////////////////////////////////////////////////////////////////////////////////
 // data signals
 ////////////////////////////////////////////////////////////////////////////////
 
-assign cdi_dat = cdi_cnt [DW-1:0];
+assign ffi_bus = ffi_cnt [DW-1:0];
 
-always @ (posedge cdo_clk)
-if (cdo_trn & (cdo_dat !== cdo_cnt [DW-1:0])) begin
+always @ (posedge ffo_clk)
+if (ffo_trn & (ffo_bus !== ffo_cnt [DW-1:0])) begin
   error <= error + 1;
 end
 
@@ -127,8 +123,8 @@ initial begin
   $dumpvars(0, cdc_tb);
 end
 
-always @ (posedge cdo_clk)
-if (cdo_cnt == 64)  $finish();
+always @ (posedge ffo_clk)
+if (ffo_cnt == 64)  $finish();
 
 ////////////////////////////////////////////////////////////////////////////////
 // DUT instance
@@ -140,19 +136,17 @@ sockit_cdc #(
   .DW       (DW)
 ) cdc (
   // input port
-  .cdi_clk  (cdi_clk),
-  .cdi_rst  (cdi_rst),
-  .cdi_clr  (cdi_clr),
-  .cdi_dat  (cdi_dat),
-  .cdi_req  (cdi_req),
-  .cdi_grt  (cdi_grt),
+  .ffi_clk  (ffi_clk),
+  .ffi_rst  (ffi_rst),
+  .ffi_bus  (ffi_bus),
+  .ffi_req  (ffi_req),
+  .ffi_grt  (ffi_grt),
   // output port
-  .cdo_clk  (cdo_clk),
-  .cdo_rst  (cdo_rst),
-  .cdo_clr  (cdo_clr),
-  .cdo_dat  (cdo_dat),
-  .cdo_req  (cdo_req),
-  .cdo_grt  (cdo_grt)
+  .ffo_clk  (ffo_clk),
+  .ffo_rst  (ffo_rst),
+  .ffo_bus  (ffo_bus),
+  .ffo_req  (ffo_req),
+  .ffo_grt  (ffo_grt)
 );
 
 endmodule
