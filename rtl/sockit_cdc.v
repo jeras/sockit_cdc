@@ -98,6 +98,8 @@ wire          ffi_trn;           // transfer
 wire          ffi_cne;           // counter   end
 reg  [WB-1:0] ffi_cnb;           // counter   binary
 wire [WB-1:0] ffi_inb;           // increment binary
+reg  [WG-1:0] ffi_cnr;           // counter   gray reference
+wire [WG-1:0] ffi_inr;           // increment gray reference
 reg  [WG-1:0] ffi_cng;           // counter   gray
 wire [WG-1:0] ffi_ing;           // increment gray
 reg  [WG-1:0] ffi_syn [SS-1:0];  // synchronization
@@ -124,6 +126,21 @@ genvar i;
 // transfer
 assign ffi_trn = ffi_req & ffi_grt;
 
+// counter end
+assign ffi_cne = ffi_cnb == (FF-1);
+
+// increment binary
+assign ffi_inb = ffi_cne ? {WB{1'b0}} : ffi_cnb+1;
+
+// counter binary
+always @ (posedge ffi_clk, posedge ffi_rst)
+if (ffi_rst)       ffi_cnb <= {WB{1'b0}};
+else if (ffi_trn)  ffi_cnb <= ffi_inb;
+
+// data memory
+always @ (posedge ffi_clk)
+if (ffi_trn) cdc_mem [ffi_cnb] <= ffi_bus;
+
 // synchronization
 generate for (i=0; i<SS; i=i+1) begin
   if (i==0) begin
@@ -145,26 +162,16 @@ always @ (posedge ffi_clk, posedge ffi_rst)
 if (ffi_rst)       ffi_cng <= {WG{1'b0}};
 else if (ffi_trn)  ffi_cng <= ffi_ing;
 
-// status
-// TODO 2 gray counters are needed
-// one WG bit for CDC
-// one WB bit for comparison and grant generation
-assign ffi_grt = ffi_syn [SS-1] != (ffi_cng ^ {1'b1,{WB{1'b0}}});
+// increment gray reference
+assign ffi_inr = ffi_cne ? ffi_cnr ^ {1'b1,{WB{1'b0}}} : gry_inc (ffi_cnr);
 
-// counter end
-assign ffi_cne = ffi_cnb == (FF-1);
-
-// increment binary
-assign ffi_inb = ffi_cne ? {WB{1'b0}} : ffi_cnb+1;
-
-// counter binary
+// counter gray reference
 always @ (posedge ffi_clk, posedge ffi_rst)
-if (ffi_rst)       ffi_cnb <= {WB{1'b0}};
-else if (ffi_trn)  ffi_cnb <= ffi_inb;
+if (ffi_rst)       ffi_cnr <= {1'b1, int2gry(FF-1)};
+else if (ffi_trn)  ffi_cnr <= ffi_inr;
 
-// data memory
-always @ (posedge ffi_clk)
-if (ffi_trn) cdc_mem [ffi_cnb] <= ffi_bus;
+// status
+assign ffi_grt = ffi_syn [SS-1] != ffi_cnr;
 
 ////////////////////////////////////////////////////////////////////////////////
 // output port                                                                //
@@ -172,6 +179,20 @@ if (ffi_trn) cdc_mem [ffi_cnb] <= ffi_bus;
 
 // transfer
 assign ffo_trn = ffo_req & ffo_grt;
+
+// counter end
+assign ffo_cne = ffo_cnb == (FF-1);
+
+// increment binary
+assign ffo_inb = ffo_cne ? {WB{1'b0}} : ffo_cnb+1;
+
+// counter binary
+always @ (posedge ffo_clk, posedge ffo_rst)
+if (ffo_rst)       ffo_cnb <= {WB{1'b0}};
+else if (ffo_trn)  ffo_cnb <= ffo_inb;
+
+// asynchronous output data
+assign ffo_bus = cdc_mem [ffo_cnb];
 
 // synchronization
 generate for (i=0; i<SS; i=i+1) begin
@@ -196,19 +217,5 @@ else if (ffo_trn)  ffo_cng <= ffo_ing;
 
 // status
 assign ffo_req = ffo_syn [SS-1] != ffo_cng;
-
-// counter end
-assign ffo_cne = ffo_cnb == (FF-1);
-
-// increment binary
-assign ffo_inb = ffo_cne ? {WB{1'b0}} : ffo_cnb+1;
-
-// counter binary
-always @ (posedge ffo_clk, posedge ffo_rst)
-if (ffo_rst)       ffo_cnb <= {WB{1'b0}};
-else if (ffo_trn)  ffo_cnb <= ffo_inb;
-
-// asynchronous output data
-assign ffo_bus = cdc_mem [ffo_cnb];
 
 endmodule
