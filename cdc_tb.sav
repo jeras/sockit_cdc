@@ -1,8 +1,9 @@
-[timestart] 0
+[timestart] 638000
 [size] 1362 724
 [pos] -1 -1
-*-16.045605 205000 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1
+*-16.045605 795000 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1
 [treeopen] cdc_tb.
+[treeopen] cdc_tb.cdc.
 @28
 cdc_tb.cdc.ffi_clk
 cdc_tb.cdc.ffi_rst
@@ -19,9 +20,9 @@ cdc_tb.cdc.ffi_inb[1:0]
 cdc_tb.cdc.ffi_cng[2:0]
 cdc_tb.cdc.ffi_ing[2:0]
 cdc_tb.cdc.ffi_cnr[2:0]
-@29
 cdc_tb.cdc.ffi_inr[2:0]
-@28
+cdc_tb.cdc.\ffi_syn[0][2:0]
+cdc_tb.cdc.\ffi_syn[1][2:0]
 cdc_tb.cdc.ffi_cne
 cdc_tb.cdc.ffo_clk
 cdc_tb.cdc.ffo_rst
@@ -37,6 +38,10 @@ cdc_tb.cdc.ffo_inb[1:0]
 @28
 cdc_tb.cdc.ffo_cng[2:0]
 cdc_tb.cdc.ffo_ing[2:0]
+cdc_tb.cdc.\ffo_syn[0][2:0]
+@29
+cdc_tb.cdc.\ffo_syn[1][2:0]
+@28
 cdc_tb.cdc.ffo_cne
 @24
 cdc_tb.error

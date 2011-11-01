@@ -7,6 +7,7 @@
 module cdc_tb ();
 
 parameter     FF = 4;   // counter width
+parameter     SS = 2;   // synchronization stages
 parameter     DW = 8;   // data    width
 
 // input port
@@ -37,6 +38,9 @@ reg  [32-1:0] ffo_prb;  // probability
 
 // monitoring
 integer error = 0;
+
+// loop index
+integer i;
 
 ////////////////////////////////////////////////////////////////////////////////
 // clocks and resets
@@ -121,6 +125,8 @@ end
 initial begin
   $dumpfile("cdc_tb.fst");
   $dumpvars(0, cdc_tb);
+  for (i=0; i<SS; i=i+1)
+  $dumpvars(0, cdc.ffi_syn[i], cdc.ffo_syn[i]);
 end
 
 // test correct end
