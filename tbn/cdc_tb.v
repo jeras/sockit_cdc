@@ -127,15 +127,17 @@ initial begin
   $dumpvars(0, cdc_tb);
   for (i=0; i<SS; i=i+1)
   $dumpvars(0, cdc.ffi_syn[i], cdc.ffo_syn[i]);
+  for (i=0; i<FF; i=i+1)
+  $dumpvars(0, cdc.cdc_mem[i]);
 end
 
 // test correct end
 always @ (posedge ffo_clk)
-if (ffo_cnt == 64)  $finish();
+if (ffo_cnt == 256)  $finish();
 
 // test timeout
 initial begin
-  #10000 $finish();
+  #10000000 $finish();
 end
 
 ////////////////////////////////////////////////////////////////////////////////
