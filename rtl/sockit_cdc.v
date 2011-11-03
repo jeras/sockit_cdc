@@ -120,7 +120,7 @@ reg  [WG-1:0] ffo_syn [SS-1:0];  // synchronization
 genvar i;
 
 ////////////////////////////////////////////////////////////////////////////////
-// input port                                                                 //
+// input port data/memory logic                                               //
 ////////////////////////////////////////////////////////////////////////////////
 
 // transfer
@@ -140,6 +140,10 @@ else if (ffi_trn)  ffi_cnb <= ffi_inb;
 // data memory
 always @ (posedge ffi_clk)
 if (ffi_trn) cdc_mem [ffi_cnb] <= ffi_bus;
+
+////////////////////////////////////////////////////////////////////////////////
+// input port control/status logic                                            //
+////////////////////////////////////////////////////////////////////////////////
 
 // synchronization
 generate for (i=0; i<SS; i=i+1) begin
@@ -167,14 +171,14 @@ assign ffi_inr = ffi_cne ? ffi_cnr ^ {1'b1,{WB{1'b0}}} : gry_inc (ffi_cnr);
 
 // counter gray reference
 always @ (posedge ffi_clk, posedge ffi_rst)
-if (ffi_rst)       ffi_cnr <= {1'b1, int2gry(FF-1)};
+if (ffi_rst)       ffi_cnr <= int2gry(-FF);
 else if (ffi_trn)  ffi_cnr <= ffi_inr;
 
 // status
 assign ffi_grt = ffi_syn [SS-1] != ffi_cnr;
 
 ////////////////////////////////////////////////////////////////////////////////
-// output port                                                                //
+// output port data/memory logic                                              //
 ////////////////////////////////////////////////////////////////////////////////
 
 // transfer
@@ -193,6 +197,10 @@ else if (ffo_trn)  ffo_cnb <= ffo_inb;
 
 // asynchronous output data
 assign ffo_bus = cdc_mem [ffo_cnb];
+
+////////////////////////////////////////////////////////////////////////////////
+// output port control/status logic                                           //
+////////////////////////////////////////////////////////////////////////////////
 
 // synchronization
 generate for (i=0; i<SS; i=i+1) begin
