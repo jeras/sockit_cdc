@@ -158,8 +158,7 @@ end
 // test correct end
 always @ (posedge ffo_clk)
 if (ffo_cnt == 256) begin
-  if (error)  $display ("FAIL");
-  else        $display ("SUCESS");
+  $display ("configuration: FF=%d, SS=%d, DW=%d; status: %s", FF, SS, DW, error ? "FAIL" : "SUCESS");
   $finish();
 end
 
