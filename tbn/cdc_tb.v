@@ -6,9 +6,29 @@
 
 module cdc_tb ();
 
-parameter     FF = 4;   // counter width
-parameter     SS = 2;   // synchronization stages
-parameter     DW = 8;   // data    width
+////////////////////////////////////////////////////////////////////////////////
+// parameters can be provided as define macros, otherwise defauls are used    //
+////////////////////////////////////////////////////////////////////////////////
+
+`ifdef CDC_FF
+parameter FF = `CDC_FF;  // counter width
+`else
+parameter FF = 4;        // counter width (default value)
+`endif
+`ifdef CDC_SS
+parameter SS = `CDC_SS;  // synchronization stages
+`else
+parameter SS = 2;        // synchronization stages (default value)
+`endif
+`ifdef CDC_DW
+parameter DW = `CDC_DW;  // data width
+`else
+parameter DW = 8;        // data width (default value)
+`endif
+
+////////////////////////////////////////////////////////////////////////////////
+// local signals                                                              //
+////////////////////////////////////////////////////////////////////////////////
 
 // input port
 reg           ffi_clk;  // clock
@@ -98,10 +118,12 @@ end
 // counters 
 ////////////////////////////////////////////////////////////////////////////////
 
+// input transfer counter
 always @ (posedge ffi_clk, posedge ffi_rst)
 if (ffi_rst)       ffi_cnt <= 0;
 else if (ffi_trn)  ffi_cnt <= ffi_cnt + 1;
 
+// output transfer counter
 always @ (posedge ffo_clk, posedge ffo_rst)
 if (ffo_rst)       ffo_cnt <= 1'b0;
 else if (ffo_trn)  ffo_cnt <= ffo_cnt + 1;
@@ -110,8 +132,10 @@ else if (ffo_trn)  ffo_cnt <= ffo_cnt + 1;
 // data signals
 ////////////////////////////////////////////////////////////////////////////////
 
+// input data is constructed from the input transfer counter
 assign ffi_bus = ffi_cnt [DW-1:0];
 
+// output data is checked against the output transfer counter
 always @ (posedge ffo_clk)
 if (ffo_trn & (ffo_bus !== ffo_cnt [DW-1:0])) begin
   error <= error + 1;
@@ -133,7 +157,11 @@ end
 
 // test correct end
 always @ (posedge ffo_clk)
-if (ffo_cnt == 256)  $finish();
+if (ffo_cnt == 256) begin
+  if (error)  $display ("FAIL");
+  else        $display ("SUCESS");
+  $finish();
+end
 
 // test timeout
 initial begin

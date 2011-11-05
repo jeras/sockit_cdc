@@ -39,8 +39,6 @@
 
 module sockit_cdc #(
   parameter FF = 4,              // FIFO deepth
-  parameter WB = $clog2(FF),     // counter width
-  parameter WG = WB+1,           // counter width
   parameter SS = 2,              // synchronization stages
   parameter RI = 1,              // registered input  data
   parameter RO = 1,              // registered output data
@@ -59,6 +57,9 @@ module sockit_cdc #(
   output wire          ffo_req,  // request
   input  wire          ffo_grt   // grant
 );
+
+localparam WB = $clog2(FF);      // counter width
+localparam WG = WB+1;            // counter width
 
 ////////////////////////////////////////////////////////////////////////////////
 // gray code related functions
