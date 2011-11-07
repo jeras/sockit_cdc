@@ -8,12 +8,17 @@ rm -f cdc_tb.out
 rm -r cdc_tb.fst
 
 
+# FIFO deepth
 for cdc_ff in {2..16}
 do
-  # compile Verilog sources (testbench and RTL)
-  iverilog -o cdc_tb.out -DCDC_FF=$cdc_ff $sources
-  # run the simulation
-  vvp cdc_tb.out -none
+  # synchronization stages
+  for cdc_ss in {1..3}
+  do
+    # compile Verilog sources (testbench and RTL)
+    iverilog -o cdc_tb.out -DCDC_FF=$cdc_ff -DCDC_SS=$cdc_ss $sources
+    # run the simulation
+    vvp cdc_tb.out -none
+  done
 done
 
 
