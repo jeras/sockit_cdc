@@ -10,21 +10,12 @@ module cdc_tb ();
 // parameters can be provided as define macros, otherwise defauls are used    //
 ////////////////////////////////////////////////////////////////////////////////
 
-`ifdef CDC_FF
-parameter FF = `CDC_FF;  // counter width
-`else
-parameter FF = 4;        // counter width (default value)
-`endif
-`ifdef CDC_SS
-parameter SS = `CDC_SS;  // synchronization stages
-`else
-parameter SS = 2;        // synchronization stages (default value)
-`endif
-`ifdef CDC_DW
-parameter DW = `CDC_DW;  // data width
-`else
-parameter DW = 8;        // data width (default value)
-`endif
+`ifdef CDC_FF  parameter FF = `CDC_FF;  `else  parameter FF = 4;  `endif  // counter width
+`ifdef CDC_DW  parameter DW = `CDC_DW;  `else  parameter DW = 8;  `endif  // data width
+`ifdef CDC_SS  parameter SS = `CDC_SS;  `else  parameter SS = 2;  `endif  // synchronization stages
+`ifdef CDC_OH  parameter OH = `CDC_OH;  `else  parameter OH = 1;  `endif
+`ifdef CDC_RI  parameter RI = `CDC_RI;  `else  parameter RI = 0;  `endif
+`ifdef CDC_RO  parameter RO = `CDC_RO;  `else  parameter RO = 0;  `endif
 
 ////////////////////////////////////////////////////////////////////////////////
 // local signals                                                              //
@@ -173,8 +164,15 @@ end
 
 // data output
 sockit_cdc #(
-  .FF       (FF),
-  .DW       (DW)
+  // size parameters
+  .DW       (DW),          // data width
+  .FF       (FF),          // FIFO deepth
+  // implementation parameters
+  .SS       (SS),          // synchronization stages
+  .OH       (OH),          // counter type (0 - binary, 1 - one hot)
+  // interface parameters
+  .RI       (RI),          // registered input  data
+  .RO       (RO)           // registered output data
 ) cdc (
   // input port
   .ffi_clk  (ffi_clk),

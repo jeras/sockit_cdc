@@ -39,7 +39,7 @@
 
 module sockit_cdc #(
   // size parameters
-  parameter DW = 1,              // data    width
+  parameter DW = 1,              // data width
   parameter FF = 4,              // FIFO deepth
   // implementation parameters
   parameter SS = 2,              // synchronization stages
@@ -167,10 +167,10 @@ generate if (OH) begin : ffi_mem
   else if (ffi_trn)  ffi_cnt <= ffi_end ? 'b1 : ffi_cnt << 1;
 
   // data memory
-  generate for (i=0; i<FF; i=i+1) begin
-  always @ (posedge ffi_clk)
-  if (ffi_trn & ffi_cnt [i]) cdc_mem [i] <= ffi_bus;
-  end endgenerate
+  for (i=0; i<FF; i=i+1) begin
+    always @ (posedge ffi_clk)
+    if (ffi_trn & ffi_cnt [i]) cdc_mem [i] <= ffi_bus;
+  end
 
 end else begin : ffi_mem
 
@@ -209,9 +209,9 @@ generate if (OH) begin : ffo_mem
   else if (ffo_trn)  ffo_cnt <= ffo_end ? 'b1 : ffo_cnt << 1;
 
   // asynchronous output data
-  generate for (i=0; i<FF; i=i+1) begin
+  for (i=0; i<FF; i=i+1) begin
     assign ffo_bus = ffo_cnt [i] ? cdc_mem [i] : {DW{1'b0}};
-  end endgenerate
+  end
 
 end else begin : ffo_mem
 
