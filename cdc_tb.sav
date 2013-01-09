@@ -1,42 +1,45 @@
+[*]
+[*] GTKWave Analyzer v3.3.41 (w)1999-2012 BSI
+[*] Wed Jan  9 15:30:40 2013
+[*]
+[dumpfile] "cdc_tb.fst"
+[dumpfile_mtime] "Wed Jan  9 15:29:47 2013"
+[dumpfile_size] 11458
+[savefile] "cdc_tb.sav"
 [timestart] 0
 [size] 1362 724
 [pos] -1 -1
-*-16.411562 125000 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1
+*-16.268009 125000 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1
 [treeopen] cdc_tb.
 [treeopen] cdc_tb.cdc.
+[sst_width] 223
+[signals_width] 191
+[sst_expanded] 1
+[sst_vpaned_height] 204
 @28
 cdc_tb.cdc.ffi_clk
 cdc_tb.cdc.ffi_rst
 @22
 cdc_tb.cdc.ffi_bus[7:0]
 @28
-cdc_tb.cdc.ffi_req
-cdc_tb.cdc.ffi_grt
+cdc_tb.cdc.ffi_vld
+cdc_tb.cdc.ffi_rdy
 cdc_tb.cdc.ffi_trn
-cdc_tb.cdc.ffi_cne
 @22
 cdc_tb.cdc.\ffi_syn[0][3:0]
 cdc_tb.cdc.\ffi_syn[1][3:0]
-cdc_tb.cdc.ffi_cnr[3:0]
-cdc_tb.cdc.ffi_cng[3:0]
-cdc_tb.cdc.ffi_cnh[4:0]
 @28
 cdc_tb.cdc.ffo_clk
 cdc_tb.cdc.ffo_rst
 @22
 cdc_tb.cdc.ffo_bus[7:0]
 @28
-cdc_tb.cdc.ffo_req
-cdc_tb.cdc.ffo_grt
+cdc_tb.cdc.ffo_vld
+cdc_tb.cdc.ffo_rdy
 cdc_tb.cdc.ffo_trn
-cdc_tb.cdc.ffo_cne
 @22
 cdc_tb.cdc.\ffo_syn[0][3:0]
 cdc_tb.cdc.\ffo_syn[1][3:0]
-cdc_tb.cdc.ffo_cng[3:0]
-@23
-cdc_tb.cdc.ffo_cnh[4:0]
-@22
 cdc_tb.cdc.\cdc_mem[0][7:0]
 cdc_tb.cdc.\cdc_mem[1][7:0]
 cdc_tb.cdc.\cdc_mem[2][7:0]

@@ -26,21 +26,21 @@
 // Handshaking protocol:                                                      //
 //                                                                            //
 // Both the input and the output port employ the same handshaking mechanism.  //
-// The data source sets the request signal (*_req) and the data drain         //
-// confirms the transfer by setting the grant signal (*_grt).                 //
+// The data source sets the valid signal (*_vld) and the data drain confirms  //
+// the transfer by setting the ready signal (*_rdy).                          //
 //                                                                            //
-//            --------   req   -----------------   req   --------             //
+//            --------   vld   -----------------   vld   --------             //
 //            )    S | ------> | D           S | ------> | D    (             //
 //            (    R |         | R    CDC    R |         | R    )             //
 //            )    C | <------ | N           C | <------ | N    (             //
-//            --------   grt   -----------------   grt   --------             //
+//            --------   rdy   -----------------   rdy   --------             //
 //                                                                            //
 ////////////////////////////////////////////////////////////////////////////////
 
 module sockit_cdc #(
   // size parameters
   parameter DW = 1,              // data width
-  parameter FF = 4,              // FIFO deepth
+  parameter FF = 4,              // FIFO depth
   // implementation parameters
   parameter SS = 2,              // synchronization stages
   parameter OH = 0,              // counter type (0 - binary, 1 - one hot)
@@ -52,14 +52,14 @@ module sockit_cdc #(
   input  wire          ffi_clk,  // clock
   input  wire          ffi_rst,  // reset
   input  wire [DW-1:0] ffi_bus,  // data
-  input  wire          ffi_req,  // request
-  output wire          ffi_grt,  // grant
+  input  wire          ffi_vld,  // valid
+  output wire          ffi_rdy,  // ready
   // output port
   input  wire          ffo_clk,  // clock
   input  wire          ffo_rst,  // reset
   output wor  [DW-1:0] ffo_bus,  // data
-  output wire          ffo_req,  // request
-  input  wire          ffo_grt   // grant
+  output wire          ffo_vld,  // valid
+  input  wire          ffo_rdy   // ready
 );
 
 localparam CW = $clog2(FF)+1;    // counter width
@@ -121,7 +121,7 @@ genvar i;
 ////////////////////////////////////////////////////////////////////////////////
 
 // transfer
-assign ffi_trn = ffi_req & ffi_grt;
+assign ffi_trn = ffi_vld & ffi_rdy;
 
 // synchronization
 generate for (i=0; i<SS; i=i+1) begin : ffi_cdc
@@ -147,7 +147,7 @@ if (ffi_rst)       ffi_ref <= int2gry(-FF);
 else if (ffi_trn)  ffi_ref <= ffi_end ? ffi_ref ^ {1'b1,{CW-1{1'b0}}} : gry_inc (ffi_ref);
 
 // status
-assign ffi_grt = ffi_syn [SS-1] != ffi_ref;
+assign ffi_rdy = ffi_syn [SS-1] != ffi_ref;
 
 ////////////////////////////////////////////////////////////////////////////////
 // input port data/memory logic                                               //
@@ -236,7 +236,7 @@ end endgenerate
 ////////////////////////////////////////////////////////////////////////////////
 
 // transfer
-assign ffo_trn = ffo_req & ffo_grt;
+assign ffo_trn = ffo_vld & ffo_rdy;
 
 // synchronization
 generate for (i=0; i<SS; i=i+1) begin : ffo_cdc
@@ -257,6 +257,6 @@ if (ffo_rst)       ffo_gry <= {CW{1'b0}};
 else if (ffo_trn)  ffo_gry <= ffo_end ? ffo_gry ^ {1'b1,{CW-1{1'b0}}} : gry_inc (ffo_gry);
 
 // status
-assign ffo_req = ffo_syn [SS-1] != ffo_gry;
+assign ffo_vld = ffo_syn [SS-1] != ffo_gry;
 
 endmodule

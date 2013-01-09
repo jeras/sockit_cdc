@@ -7,7 +7,7 @@
 module cdc_tb ();
 
 ////////////////////////////////////////////////////////////////////////////////
-// parameters can be provided as define macros, otherwise defauls are used    //
+// parameters can be provided as define macros, otherwise defaults are used   //
 ////////////////////////////////////////////////////////////////////////////////
 
 `ifdef CDC_FF  parameter FF = `CDC_FF;  `else  parameter FF = 4;  `endif  // counter width
@@ -25,8 +25,8 @@ module cdc_tb ();
 reg           ffi_clk;  // clock
 reg           ffi_rst;  // reset
 wire [DW-1:0] ffi_bus;  // data
-reg           ffi_req;  // request
-wire          ffi_grt;  // grant
+reg           ffi_vld;  // valid
+wire          ffi_rdy;  // ready
 
 wire          ffi_trn;  // transfer
 integer       ffi_cnt;  // counter
@@ -38,8 +38,8 @@ reg  [32-1:0] ffi_prb;  // probability
 reg           ffo_clk;  // clock
 reg           ffo_rst;  // reset
 wire [DW-1:0] ffo_bus;  // data
-wire          ffo_req;  // request
-reg           ffo_grt;  // grant
+wire          ffo_vld;  // valid
+reg           ffo_rdy;  // ready
 
 wire          ffo_trn;  // transfer
 integer       ffo_cnt;  // counter
@@ -84,16 +84,16 @@ end
 // control signals
 ////////////////////////////////////////////////////////////////////////////////
 
-assign ffi_trn = ffi_req & ffi_grt;
-assign ffo_trn = ffo_req & ffo_grt;
+assign ffi_trn = ffi_vld & ffi_rdy;
+assign ffo_trn = ffo_vld & ffo_rdy;
 
 always @ (posedge ffi_clk, posedge ffi_rst)
-if (ffi_rst)  ffi_req <= 1'b0;
-else          ffi_req <= ~ffi_req | ffi_trn ? $random(ffi_rnd) < ffi_prb : 1'b1;
+if (ffi_rst)  ffi_vld <= 1'b0;
+else          ffi_vld <= ~ffi_vld | ffi_trn ? $random(ffi_rnd) < ffi_prb : 1'b1;
 
 always @ (posedge ffo_clk, posedge ffo_rst)
-if (ffo_rst)  ffo_grt <= 1'b0;
-else          ffo_grt <= ~ffo_grt | ffo_trn ? $random(ffo_rnd) < ffo_prb : 1'b1;
+if (ffo_rst)  ffo_rdy <= 1'b0;
+else          ffo_rdy <= ~ffo_rdy | ffo_trn ? $random(ffo_rnd) < ffo_prb : 1'b1;
 
 initial begin
   ffi_rnd = 0;
@@ -166,7 +166,7 @@ end
 sockit_cdc #(
   // size parameters
   .DW       (DW),          // data width
-  .FF       (FF),          // FIFO deepth
+  .FF       (FF),          // FIFO depth
   // implementation parameters
   .SS       (SS),          // synchronization stages
   .OH       (OH),          // counter type (0 - binary, 1 - one hot)
@@ -178,14 +178,14 @@ sockit_cdc #(
   .ffi_clk  (ffi_clk),
   .ffi_rst  (ffi_rst),
   .ffi_bus  (ffi_bus),
-  .ffi_req  (ffi_req),
-  .ffi_grt  (ffi_grt),
+  .ffi_vld  (ffi_vld),
+  .ffi_rdy  (ffi_rdy),
   // output port
   .ffo_clk  (ffo_clk),
   .ffo_rst  (ffo_rst),
   .ffo_bus  (ffo_bus),
-  .ffo_req  (ffo_req),
-  .ffo_grt  (ffo_grt)
+  .ffo_vld  (ffo_vld),
+  .ffo_rdy  (ffo_rdy)
 );
 
 endmodule
